@@ -1,7 +1,12 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import axios from 'axios';
-import React, { useMemo, useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { Link, useParams } from 'react-router-dom';
 import FancyCheckbox from './fancyCheckbox';
 import Notification from './notification';
 import { useUrl } from './UrlProvider';
@@ -37,6 +42,7 @@ const CampaignContactsList = () => {
   }
 
   const areSomeSelected = !areNoneSelected && !areAllSelected; // pro indeterminate
+
   // Pomocná funkce – je kontakt bez odpovědi?
   const isNoReply = (contact) => {
     const s = (contact.status || '').trim();
@@ -85,29 +91,28 @@ const CampaignContactsList = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchContacts = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}getCampaignContacts/${id}`);
-        if (Array.isArray(response.data)) {
-          setContacts(response.data);
-        } else {
-          setIsErrorVisible(error);
-          setError('Neplatná odpověď ze serveru.');
-        }
-      } catch (err) {
-        setIsErrorVisible(error);
-        setError(`Chyba při načítání: ${err.message}`);
-      } finally {
-        setLoading(false);
+  const fetchContacts = useCallback(async () => {
+    try {
+      const response = await axios.get(`${apiUrl}getCampaignContacts/${id}`);
+      if (Array.isArray(response.data)) {
+        setContacts(response.data);
+      } else {
+        setIsErrorVisible(true);
+        setError('Neplatná odpověď ze serveru.');
       }
-    };
+    } catch (err) {
+      setIsErrorVisible(true);
+      setError(`Chyba při načítání: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiUrl, id]);
 
+  useEffect(() => {
     fetchContacts();
-  }, [id, isSuccessVisible]);
+  }, [fetchContacts]);
 
   const handleCheckboxChange = (contactId) => {
-    console.log(contactId);
     setSelectedContacts((prevContacts) => {
       const updatedContacts = prevContacts.includes(contactId)
         ? prevContacts.filter((existingId) => existingId !== contactId)
@@ -116,6 +121,7 @@ const CampaignContactsList = () => {
       return updatedContacts;
     });
   };
+
   const selectEmptyStatusContacts = () => {
     const emptyStatusIds = contacts
       .filter((contact) => !contact.status || contact.status.trim() === '')
@@ -133,12 +139,18 @@ const CampaignContactsList = () => {
       alert('Vyberte kontakty a status.');
       return;
     }
+
+    setIsSuccessVisible(false);
+    setIsErrorVisible(false);
+
+    const statusToSend = newStatus;
     setNewStatus('');
+
     const url = `${apiUrl}campaignContacts/${id}`;
     const data = {
       campaign_id: id,
       contact_ids: selectedContacts,
-      status: newStatus,
+      status: statusToSend,
     };
 
     axios({
@@ -147,14 +159,11 @@ const CampaignContactsList = () => {
       data,
     })
       .then((response) => {
-        console.log(response.data.msg);
         if (response.data.msg === true) {
           setIsSuccessVisible(true);
-          console.log('překe');
           setSelectedContacts([]);
-          // Volitelně: fetchContacts(); pokud chceš znovu načíst data
+          fetchContacts(); // Překreslí tabulku s čerstvými daty při každém uložení
         } else {
-          console.log('Chyba v odpovědi');
           setIsErrorVisible(true);
         }
       })
@@ -163,6 +172,7 @@ const CampaignContactsList = () => {
         setIsErrorVisible(true);
       });
   };
+
   const handleBulkDelete = () => {
     if (selectedContacts.length === 0) {
       return;
@@ -173,14 +183,17 @@ const CampaignContactsList = () => {
       return;
     }
 
-    const url = `${apiUrl}campaignContacts/${id}`; // uprav podle svého API
+    setIsSuccessVisible(false);
+    setIsErrorVisible(false);
+
+    const url = `${apiUrl}campaignContacts/${id}`;
     const data = {
       campaign_id: id,
       contact_ids: selectedContacts,
     };
 
     axios({
-      method: 'delete', // nebo 'delete' podle backendu
+      method: 'delete',
       url,
       data,
     })
@@ -188,9 +201,7 @@ const CampaignContactsList = () => {
         if (response.data.msg === true) {
           setIsSuccessVisible(true);
           setSelectedContacts([]);
-          setContacts((prevContacts) => prevContacts.filter(
-            (contact) => !selectedContacts.includes(contact.contact_id),
-          ));
+          fetchContacts();
         } else {
           setIsErrorVisible(true);
         }
@@ -204,6 +215,7 @@ const CampaignContactsList = () => {
   if (loading) {
     return <p>Načítání...</p>;
   }
+
   if (error) {
     return (
       <p>
@@ -212,6 +224,7 @@ const CampaignContactsList = () => {
       </p>
     );
   }
+
   return (
     <>
       {isSuccessVisible && (<Notification message="Uloženo" type="edit-firm-success" />)}
@@ -222,10 +235,7 @@ const CampaignContactsList = () => {
           position: 'fixed', top: 58, left: 10, width: '100%', background: 'white',
         }}
       >
-        <h3 style={{
-          display: 'inline-block', 'margin-right': '1em',
-        }}
-        >
+        <h3 style={{ display: 'inline-block', marginRight: '1em' }}>
           Kontakty kampaně #
           {id}
         </h3>
@@ -286,10 +296,9 @@ const CampaignContactsList = () => {
         >
           Export vybraných
         </button>
-
       </div>
 
-      <table className="responsive-table" style={{ 'margin-top': 70 }}>
+      <table className="responsive-table" style={{ marginTop: 70 }}>
         <thead>
           <tr>
             <th>
@@ -301,7 +310,6 @@ const CampaignContactsList = () => {
                 name="master"
                 checked={areAllSelected}
               />
-
             </th>
             <th>Firma</th>
             <th>Email</th>
@@ -320,9 +328,7 @@ const CampaignContactsList = () => {
                   checked={selectedContacts.includes(contact.contact_id)}
                   onChange={() => handleCheckboxChange(contact.contact_id)}
                   ariaLabel={`Vybrat kontakt ${contact.contact_id}`}
-                >
-                  {/*  viditelný text */}
-                </FancyCheckbox>
+                />
               </td>
 
               <td>
