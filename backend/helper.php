@@ -119,4 +119,16 @@ function convertDatetoCzech($date) {
 
 
     }
+
+function fix_encoding($data)
+{
+    if (is_array($data)) {
+        foreach ($data as $key => $value) {
+            $data[$key] = fix_encoding($value);
+        }
+    } elseif (is_string($data)) {
+        return iconv('ISO-8859-2', 'UTF-8//IGNORE', $data);
+    }
+    return $data;
+}
 ?>
