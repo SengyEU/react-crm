@@ -1,0 +1,9 @@
+.table-wrapper { overflow-x: auto; width: 100%; }
+.responsive-table { width: 100%; border-collapse: collapse; text-align: left; }
+@media (min-width: 769px) {
+  .responsive-table th, .responsive-table td { padding: 12px 16px; border-bottom: 1px solid #eee; }
+  .responsive-table th { background-color: #f8f9fa; font-weight: 600; }
+}
+@media (max-width: 768px) {
+  .responsive-table th, .responsive-table td { padding: 8px; font-size: 14px; border-bottom: 1px solid #eee; }
+}
