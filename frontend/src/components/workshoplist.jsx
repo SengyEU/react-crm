@@ -53,8 +53,10 @@ const WorkshopList = ({
     try {
       const response = await axios.get(`${apiUrl}workshops/${firmId}`);
       if (Array.isArray(response.data) && response.data.length === 0) {
+        setError('Žádné akce.');
         setWorkshops([]);
       } else {
+        setError(null);
         setWorkshops(response.data || []);
       }
     } catch (err) {

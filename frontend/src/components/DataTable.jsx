@@ -60,8 +60,7 @@ const DataTable = ({
                   <input
                     type="checkbox"
                     checked={selectedIds?.has(row.id)}
-                    onChange={(e) => onSelectRow(rowIndex, row.id, false)}
-                    onClick={(e) => onSelectRow(rowIndex, row.id, e.shiftKey)}
+                    onChange={(e) => onSelectRow(rowIndex, row.id, e.nativeEvent.shiftKey)}
                   />
                 </td>
               )}

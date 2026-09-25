@@ -16,13 +16,13 @@ const UrlProvider = ({ children }) => {
   const [user, setUser] = useState('');
   useEffect(() => {
     const fetchUser = async () => {
-      let data = 'reader';
       try {
         const response = await fetch(`${url}rest.php/user`);
         if (!response.ok) {
           setUser('');
+          return;
         }
-        data = await response.json();
+        const data = await response.json();
         setUser(data);
       } catch (error) {
         console.error('Error fetching user:', error);
@@ -30,8 +30,6 @@ const UrlProvider = ({ children }) => {
     };
     fetchUser();
   }, [url]);
-
-  console.log(user);
 
   // toto vracím....
   const contextValue = useMemo(() => ({

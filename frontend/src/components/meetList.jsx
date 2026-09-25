@@ -52,13 +52,10 @@ const MeetList = ({
     setLoading(true);
     try {
       const response = await axios.get(`${apiUrl}meets/${firmId}`);
-      if (
-        Array.isArray(response.data) &&
-        response.data.length === 0 &&
-        response.data.msg !== undefined
-      ) {
+      if (Array.isArray(response.data) && response.data.length === 0) {
         setError('Žádné schůzky.');
       } else {
+        setError(null);
         setMeets(response.data || []);
       }
     } catch (err) {

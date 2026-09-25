@@ -4,7 +4,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 import path from 'path';
 import { mockApiPlugin } from './mockApiPlugin.js';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [
     react(),
     basicSsl(),
@@ -17,10 +17,10 @@ export default defineConfig({
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
   },
   define: {
-    PRODUCTION: false,
+    PRODUCTION: command === 'build',
   },
   server: {
     port: 9000,
     host: true,
   },
-});
+}));

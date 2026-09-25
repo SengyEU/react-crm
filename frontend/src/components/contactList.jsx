@@ -53,13 +53,10 @@ const ContactList = ({
     setLoading(true);
     try {
       const response = await axios.get(`${apiUrl}contacts/${firmId}`);
-      if (
-        Array.isArray(response.data) &&
-        response.data.length === 0 &&
-        response.data.msg !== undefined
-      ) {
+      if (Array.isArray(response.data) && response.data.length === 0) {
         setError('Žádné kontakty.');
       } else {
+        setError(null);
         setContacts(response.data || []);
       }
     } catch (err) {

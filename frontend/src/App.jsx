@@ -69,8 +69,6 @@ const AppContentInner = () => {
         <Route path="/meets" element={<MeetList />} />
         <Route path="/workshops/:firmId" element={<WorkshopList />} />
         <Route path="/workshops" element={<WorkshopList />} />
-        <Route path="/akce/:firmId" element={<WorkshopList />} />
-        <Route path="/akce" element={<WorkshopList />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/allWSlist" element={<AllWSlist />} />
         <Route path="/graph" element={<ChartComponent />} />
