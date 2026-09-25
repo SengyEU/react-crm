@@ -13,10 +13,9 @@ module.exports = {
   ignorePatterns: [
     '.eslintrc.prod.js',
     '.eslintrc.js',
-    'webpack.config.common.js',
-    'webpack.config.dev.js',
-    'webpack.config.prod.js',
     'postcss.config.js',
+    'vite.config.js',
+    'mockApiPlugin.js',
     'dist/**/*',
     'jsconfig.json',
   ],
