@@ -11,6 +11,9 @@ import ColumnList from './components/columnList';
 import CampaignForm from './components/editCampaignForm';
 import EditEventForm from './components/editEventForm';
 import EventList from './components/eventsList';
+import ContactList from './components/contactList';
+import MeetList from './components/meetList';
+import WorkshopList from './components/workshoplist';
 import ExportForm from './components/exportForm';
 import FirmList from './components/firmList';
 // import GAuthProvider from './components/google/googleAuthProvider';
@@ -60,6 +63,14 @@ const AppContentInner = () => {
         <Route path="/events" element={<EventList />} />
         <Route path="/events/:id" element={<EventList />} />
         <Route path="/events/:id/:eventId" element={<EditEventForm />} />
+        <Route path="/contacts/:firmId" element={<ContactList />} />
+        <Route path="/contacts" element={<ContactList />} />
+        <Route path="/meets/:firmId" element={<MeetList />} />
+        <Route path="/meets" element={<MeetList />} />
+        <Route path="/workshops/:firmId" element={<WorkshopList />} />
+        <Route path="/workshops" element={<WorkshopList />} />
+        <Route path="/akce/:firmId" element={<WorkshopList />} />
+        <Route path="/akce" element={<WorkshopList />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/allWSlist" element={<AllWSlist />} />
         <Route path="/graph" element={<ChartComponent />} />

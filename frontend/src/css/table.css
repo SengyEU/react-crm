@@ -305,13 +305,19 @@ button {
 
 }
 
-.floating-layer table {
+.floating-layer table,
+.routed-view table {
   background-color: white;
   border-radius: 8px;
-  width:auto;
-  max-width:100%;
-  margin:10px auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 10px auto;
+}
 
+.routed-view {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* stylelint-disable-next-line selector-class-pattern */
