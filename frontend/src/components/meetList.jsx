@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import EditMeetForm from './editMeetForm';
+import DataTable from './DataTable';
 import { useUrl } from './UrlProvider';
 import { convertDateTimeToCzech } from '../utils/czechdates';
 
@@ -183,42 +184,48 @@ const MeetList = ({
           firmName={displayFirmTitle.split('/(kont)')[0]}
         />
       ) : (
-        <table className="responsive-table">
-          <caption>
-            <h3>{`${displayFirmTitle.split('/(kont)')[0]} - schůzky`}</h3>
-          </caption>
-          <thead>
-            <tr>
-              <th>Datum a čas</th>
-              <th>Poznámka</th>
-              <th />
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {meets.map((meet) => (
-              <tr key={meet.id}>
-                <td data-label="Datum a čas">
-                  {convertDateTimeToCzech(meet.date_time)}
-                </td>
-                <td data-label="Poznámka">{meet.notes}</td>
-                <td>
-                  <button type="button" onClick={() => handleEditClick(meet)}>
-                    Upravit
-                  </button>
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    onClick={() => handledelClick(meet)}
-                    className="del-btn"
-                  >
-                    Smazat
-                  </button>
-                </td>
-              </tr>
-            ))}
-            <tr>
+        <DataTable
+          caption={<h3>{`${displayFirmTitle.split('/(kont)')[0]} - schůzky`}</h3>}
+          data={meets}
+          columns={[
+            {
+              key: 'date_time',
+              label: 'Datum a čas',
+              dataLabel: 'Datum a čas',
+              renderCell: (meet) => convertDateTimeToCzech(meet.date_time),
+            },
+            {
+              key: 'notes',
+              label: 'Poznámka',
+              dataLabel: 'Poznámka',
+            },
+            {
+              key: 'edit',
+              label: '',
+              sortable: false,
+              renderCell: (meet) => (
+                <button type="button" onClick={() => handleEditClick(meet)}>
+                  Upravit
+                </button>
+              ),
+            },
+            {
+              key: 'delete',
+              label: '',
+              sortable: false,
+              renderCell: (meet) => (
+                <button
+                  type="button"
+                  onClick={() => handledelClick(meet)}
+                  className="del-btn"
+                >
+                  Smazat
+                </button>
+              ),
+            },
+          ]}
+          extraRow={(
+            <>
               <td />
               <td />
               <td />
@@ -237,9 +244,9 @@ const MeetList = ({
                   Přidat schůzku
                 </button>
               </td>
-            </tr>
-          </tbody>
-        </table>
+            </>
+          )}
+        />
       )}
     </div>
   );

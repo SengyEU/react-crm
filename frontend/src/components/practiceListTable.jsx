@@ -3,6 +3,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import DataTable from './DataTable';
 import Notification from './notification';
 import { useUrl } from './UrlProvider';
 
@@ -212,12 +213,6 @@ const PracticeListTable = () => {
     setPractices(sortedData);
     setSortConfig({ key, direction });
   };
-  const getSortIcon = (key) => {
-    if (sortConfig.key !== key) {
-      return '';
-    }
-    return sortConfig.direction === 'asc' ? '▲' : '▼';
-  };
 
   if (loading) {
     return <p className="no-data">Načítám...</p>;
@@ -234,99 +229,125 @@ const PracticeListTable = () => {
     <div className="responsive-table">
       {isSuccessVisible && (<Notification message="Uloženo" type="edit-firm-success" />)}
       {isErrorVisible && (<Notification message="Chyba při ukládání!" type="edit-firm-error" />)}
-      <table className="firmlist practice-table">
-        <caption>{isDirty && 'Neuloženo'}</caption>
-        <thead>
-          <tr>
-            <th
-              onClick={() => sortByKey('name')}
-            >
-              Firma
-              {getSortIcon('name')}
-            </th>
-            <th
-              onClick={() => sortByKey('date_time')}
-            >
-              Datum a čas
-              {getSortIcon('date_time')}
-            </th>
-            <th
-              onClick={() => sortByKey('subject')}
-            >
-              Obor
-            </th>
-            <th
-              onClick={() => sortByKey('annual')}
-            >
-              Ročník
-            </th>
-            <th>Počet žáků</th>
-            <th>Poznámka</th>
-            <th>
-              <button type="button" onClick={handleSubmit}>Uložit změny</button>
-              <a href={csvURL} id="csv_export">CSV export</a>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {practices.map((practice, index) => (
-            <tr key={practice.id} className={practice.invalid ? 'invalid-row' : ''}>
-              <td data-label="firma" className={getSortIcon('firma') ? 'sorted-colm' : ''}>
-                <Link
-                  to={`/firm/${encodeURIComponent(practice.name)}`}
-                  style={{ cursor: 'pointer', textDecoration: 'underline', color: 'inherit' }}
-                >
-                  {practice.name}
-                </Link>
-              </td>
-              <td data-label="Datum a čas" className={getSortIcon('date_time') ? 'sorted-colm' : ''}>
-                <input
-                  name="date_time"
-                  type="month"
-                  value={practice.date_time ?? ''}
-                  onChange={(e) => handleChange(e, index)}
-                />
-              </td>
-              <td data-label="Obor">
-                <select id="subject" name="subject" value={practice.subject ?? ''} onChange={(e) => handleChange(e, index)}>
-                  <option value="">---</option>
-                  <option value="1">IT</option>
-                  <option value="2">ELE</option>
-                  <option value="3">ELE,IT</option>
-                </select>
-              </td>
-              <td data-label="Ročník"><input type="number" min="2" max="3" name="annual" value={practice.annual ?? ''} onChange={(e) => handleChange(e, index)} /></td>
-              <td data-label="Počet žáků">
-                <input
-                  type="number"
-                  name="count"
-                  value={practice.count ?? ''}
-                  onChange={(e) => handleChange(e, index)}
-
-                />
-              </td>
-              <td data-label="Poznámka">
-                <textarea
-                  name="notes"
-                  id="Poznámka"
-                  onChange={(e) => handleChange(e, index)}
-                  defaultValue={practice.notes ?? ''}
-                />
-              </td>
-              <td>
+      <DataTable
+        responsive={false}
+        className="firmlist practice-table"
+        caption={isDirty ? 'Neuloženo' : null}
+        data={practices}
+        sortConfig={sortConfig}
+        onSort={(key) => sortByKey(key)}
+        getRowKey={(row, i) => row.id ?? i}
+        rowClassName={(row) => (row.invalid ? 'invalid-row' : '')}
+        extraRow={
+          <>
+            <td />
+            <td />
+            <td />
+            <td />
+          </>
+        }
+        columns={[
+          {
+            key: 'name',
+            label: 'Firma',
+            dataLabel: 'firma',
+            sortable: true,
+            headerClassName: sortConfig.key === 'name' ? 'sorted-colm' : '',
+            cellClassName: () => (sortConfig.key === 'firma' || sortConfig.key === 'name' ? 'sorted-colm' : ''),
+            renderCell: (practice) => (
+              <Link
+                to={`/firm/${encodeURIComponent(practice.name)}`}
+                style={{ cursor: 'pointer', textDecoration: 'underline', color: 'inherit' }}
+              >
+                {practice.name}
+              </Link>
+            ),
+          },
+          {
+            key: 'date_time',
+            label: 'Datum a čas',
+            dataLabel: 'Datum a čas',
+            sortable: true,
+            headerClassName: sortConfig.key === 'date_time' ? 'sorted-colm' : '',
+            cellClassName: () => (sortConfig.key === 'date_time' ? 'sorted-colm' : ''),
+            renderCell: (practice, index) => (
+              <input
+                name="date_time"
+                type="month"
+                value={practice.date_time ?? ''}
+                onChange={(e) => handleChange(e, index)}
+              />
+            ),
+          },
+          {
+            key: 'subject',
+            label: 'Obor',
+            dataLabel: 'Obor',
+            sortable: true,
+            renderCell: (practice, index) => (
+              <select id="subject" name="subject" value={practice.subject ?? ''} onChange={(e) => handleChange(e, index)}>
+                <option value="">---</option>
+                <option value="1">IT</option>
+                <option value="2">ELE</option>
+                <option value="3">ELE,IT</option>
+              </select>
+            ),
+          },
+          {
+            key: 'annual',
+            label: 'Ročník',
+            dataLabel: 'Ročník',
+            sortable: true,
+            renderCell: (practice, index) => (
+              <input type="number" min="2" max="3" name="annual" value={practice.annual ?? ''} onChange={(e) => handleChange(e, index)} />
+            ),
+          },
+          {
+            key: 'count',
+            label: 'Počet žáků',
+            dataLabel: 'Počet žáků',
+            sortable: false,
+            renderCell: (practice, index) => (
+              <input
+                type="number"
+                name="count"
+                value={practice.count ?? ''}
+                onChange={(e) => handleChange(e, index)}
+              />
+            ),
+          },
+          {
+            key: 'notes',
+            label: 'Poznámka',
+            dataLabel: 'Poznámka',
+            sortable: false,
+            renderCell: (practice, index) => (
+              <textarea
+                name="notes"
+                id="Poznámka"
+                onChange={(e) => handleChange(e, index)}
+                defaultValue={practice.notes ?? ''}
+              />
+            ),
+          },
+          {
+            key: 'actions',
+            label: (
+              <>
+                <button type="button" onClick={handleSubmit}>Uložit změny</button>
+                <a href={csvURL} id="csv_export">CSV export</a>
+              </>
+            ),
+            sortable: false,
+            renderCell: (practice) => (
+              <>
                 {addFirmBnt(practice)}
                 <button type="button" onClick={() => handledelClick(practice)} className="del-btn">-</button>
-              </td>
-            </tr>
-          ))}
-          <tr>
-            <td />
-            <td />
-            <td />
-            <td />
-          </tr>
-        </tbody>
-      </table>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 };

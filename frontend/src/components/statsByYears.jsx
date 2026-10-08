@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 // import CopyFirmNamesButton from './CopyFirmNamesButton';
 import FetchWrapper from './fetchWrapper';
+import DataTable from './DataTable';
 import Notification from './notification';
 import SelectSchoolYear from './selectSchoolYear';
 import { useUrl } from './UrlProvider';
@@ -12,246 +13,220 @@ const StatsByYears = () => {
   const [selectedYear, setSelectedYear] = useState(y);
   const [msg, setMsg] = useState(null);
   const renderTable = (data) => (
-    <table>
-      <caption><h2>Praxe</h2></caption>
-      <thead>
-        <tr>
-          <th>Firma</th>
-          <th>Ročník</th>
-          <th>Počet</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item) => (
-          <tr key={item.firm_id}>
-            <td>{item.firm_name}</td>
-            <td>{item.annual}</td>
-            <td>{item.count}</td>
-          </tr>
-        ))}
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colSpan="100%">
-            <button
-              type="button"
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  data.map((item) => item.firm_name).filter(Boolean).join('; '),
-                );
-                setMsg('Názvy firem byly zkopírovány.');
-              }}
-            >
-              Kopírovat názvy firem
-            </button>
-          </td>
-        </tr>
-      </tfoot>
-    </table>
+    <DataTable
+      responsive={false}
+      caption={<h2>Praxe</h2>}
+      data={data}
+      getRowKey={(row, i) => row.firm_id ?? i}
+      columns={[
+        {
+          key: 'firm_name',
+          label: 'Firma',
+          renderCell: (item) => item.firm_name,
+        },
+        {
+          key: 'annual',
+          label: 'Ročník',
+          renderCell: (item) => item.annual,
+        },
+        {
+          key: 'count',
+          label: 'Počet',
+          renderCell: (item) => item.count,
+        },
+      ]}
+      footer={
+        <button
+          type="button"
+          onClick={() => {
+            navigator.clipboard.writeText(
+              data.map((item) => item.firm_name).filter(Boolean).join('; '),
+            );
+            setMsg('Názvy firem byly zkopírovány.');
+          }}
+        >
+          Kopírovat názvy firem
+        </button>
+      }
+    />
   );
   const renderTable2 = (data) => (
-    <table>
-      <caption><h2>Pozvánky</h2></caption>
-      <thead>
-        <tr>
-          <th>Firma</th>
-          <th>A adres</th>
-          <th>E adres</th>
-          <th>I adres</th>
-          <th>A neadres</th>
-          <th>E neadres</th>
-          <th>I neadres</th>
-          <th>Všem</th>
-          <th>Celkem</th>
-          <th>Poznámka</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item) => (
-          <tr key={item.firm_id}>
-            <td>{item.firm_name}</td>
-            <td>{item.A_adres}</td>
-            <td>{item.E_adres}</td>
-            <td>{item.I_adres}</td>
-            <td>{item.A_neadres}</td>
-            <td>{item.E_neadres}</td>
-            <td>{item.I_neadres}</td>
-            <td>{item.vsem}</td>
-            <td>{item.count}</td>
-            <td>{item.note}</td>
-          </tr>
-        ))}
-      </tbody>
-      <tfoot>
-        <td>
-          <button
-            type="button"
-            onClick={() => {
-              const firmNames = data
-                .map((item) => item.firm_name)
-                .filter(Boolean)
-                .join('; ');
+    <DataTable
+      responsive={false}
+      caption={<h2>Pozvánky</h2>}
+      data={data}
+      getRowKey={(row, i) => row.firm_id ?? i}
+      columns={[
+        {
+          key: 'firm_name',
+          label: 'Firma',
+          renderCell: (item) => item.firm_name,
+        },
+        { key: 'A_adres', label: 'A adres', renderCell: (item) => item.A_adres },
+        { key: 'E_adres', label: 'E adres', renderCell: (item) => item.E_adres },
+        { key: 'I_adres', label: 'I adres', renderCell: (item) => item.I_adres },
+        { key: 'A_neadres', label: 'A neadres', renderCell: (item) => item.A_neadres },
+        { key: 'E_neadres', label: 'E neadres', renderCell: (item) => item.E_neadres },
+        { key: 'I_neadres', label: 'I neadres', renderCell: (item) => item.I_neadres },
+        { key: 'vsem', label: 'Všem', renderCell: (item) => item.vsem },
+        { key: 'count', label: 'Celkem', renderCell: (item) => item.count },
+        { key: 'note', label: 'Poznámka', renderCell: (item) => item.note },
+      ]}
+      footer={
+        <button
+          type="button"
+          onClick={() => {
+            const firmNames = data
+              .map((item) => item.firm_name)
+              .filter(Boolean)
+              .join('; ');
 
-              navigator.clipboard.writeText(firmNames);
-              setMsg('Názvy firem byly zkopírovány.');
-            }}
-          >
-            Kopírovat názvy firem
-          </button>
-        </td>
-      </tfoot>
-    </table>
+            navigator.clipboard.writeText(firmNames);
+            setMsg('Názvy firem byly zkopírovány.');
+          }}
+        >
+          Kopírovat názvy firem
+        </button>
+      }
+    />
   );
   const renderTable3 = (data) => (
-    <table>
-      <caption><h2>Přednášky, Worskshop, Exkurze atd.</h2></caption>
-      <thead>
-        <tr>
-          <th>Firma</th>
-          <th>Typ</th>
-          <th>Datum</th>
+    <DataTable
+      responsive={false}
+      caption={<h2>Přednášky, Worskshop, Exkurze atd.</h2>}
+      data={data}
+      getRowKey={(row, i) => row.firm_id ?? i}
+      columns={[
+        {
+          key: 'firm_name',
+          label: 'Firma',
+          renderCell: (item) => item.firm_name,
+        },
+        { key: 'typ', label: 'Typ', renderCell: (item) => item.typ },
+        {
+          key: 'datum',
+          label: 'Datum',
+          cellClassName: () => 'no-wrap',
+          renderCell: (item) => convertDateToCzech(item.datum),
+        },
+      ]}
+      footer={
+        <button
+          type="button"
+          onClick={() => {
+            const firmNames = data
+              .map((item) => item.firm_name)
+              .filter(Boolean)
+              .join('; ');
 
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item) => (
-          <tr key={item.firm_id}>
-            <td>{item.firm_name}</td>
-            <td>{item.typ}</td>
-            <td className="no-wrap">{convertDateToCzech(item.datum)}</td>
-          </tr>
-        ))}
-      </tbody>
-      <tfoot>
-        <td>
-          <button
-            type="button"
-            onClick={() => {
-              const firmNames = data
-                .map((item) => item.firm_name)
-                .filter(Boolean)
-                .join('; ');
-
-              navigator.clipboard.writeText(firmNames);
-              setMsg('Názvy firem byly zkopírovány.');
-            }}
-          >
-            Kopírovat názvy firem
-          </button>
-        </td>
-      </tfoot>
-    </table>
+            navigator.clipboard.writeText(firmNames);
+            setMsg('Názvy firem byly zkopírovány.');
+          }}
+        >
+          Kopírovat názvy firem
+        </button>
+      }
+    />
   );
   const renderTable4 = (data) => (
-    <table>
-      <caption><h2>Dary</h2></caption>
-      <thead>
-        <tr>
-          <th>Firma</th>
-          <th>Počet</th>
+    <DataTable
+      responsive={false}
+      caption={<h2>Dary</h2>}
+      data={data}
+      getRowKey={(row, i) => row.firm_id ?? i}
+      columns={[
+        {
+          key: 'firm_name',
+          label: 'Firma',
+          renderCell: (item) => item.firm_name,
+        },
+        { key: 'count', label: 'Počet', renderCell: (item) => item.count },
+      ]}
+      footer={
+        <button
+          type="button"
+          onClick={() => {
+            const firmNames = data
+              .map((item) => item.firm_name)
+              .filter(Boolean)
+              .join('; ');
 
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item) => (
-          <tr key={item.firm_id}>
-            <td>{item.firm_name}</td>
-            <td>{item.count}</td>
-          </tr>
-        ))}
-      </tbody>
-      <tfoot>
-        <td>
-          <button
-            type="button"
-            onClick={() => {
-              const firmNames = data
-                .map((item) => item.firm_name)
-                .filter(Boolean)
-                .join('; ');
-
-              navigator.clipboard.writeText(firmNames);
-              setMsg('Názvy firem byly zkopírovány.');
-            }}
-          >
-            Kopírovat názvy firem
-          </button>
-        </td>
-      </tfoot>
-
-    </table>
+            navigator.clipboard.writeText(firmNames);
+            setMsg('Názvy firem byly zkopírovány.');
+          }}
+        >
+          Kopírovat názvy firem
+        </button>
+      }
+    />
   );
   const renderTable5 = (data) => (
-    <table>
-      <caption><h2>Schůzky</h2></caption>
-      <thead>
-        <tr>
-          <th>Firma</th>
-          <th>Datum</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item) => (
-          <tr key={item.firm_id}>
-            <td>{item.firm_name}</td>
-            <td className="no-wrap">{convertDateToCzech(item.datum)}</td>
-          </tr>
-        ))}
-      </tbody>
-      <tfoot>
-        <td>
-          <button
-            type="button"
-            onClick={() => {
-              const firmNames = data
-                .map((item) => item.firm_name)
-                .filter(Boolean)
-                .join('; ');
+    <DataTable
+      responsive={false}
+      caption={<h2>Schůzky</h2>}
+      data={data}
+      getRowKey={(row, i) => row.firm_id ?? i}
+      columns={[
+        {
+          key: 'firm_name',
+          label: 'Firma',
+          renderCell: (item) => item.firm_name,
+        },
+        {
+          key: 'datum',
+          label: 'Datum',
+          cellClassName: () => 'no-wrap',
+          renderCell: (item) => convertDateToCzech(item.datum),
+        },
+      ]}
+      footer={
+        <button
+          type="button"
+          onClick={() => {
+            const firmNames = data
+              .map((item) => item.firm_name)
+              .filter(Boolean)
+              .join('; ');
 
-              navigator.clipboard.writeText(firmNames);
-              setMsg('Názvy firem byly zkopírovány.');
-            }}
-          >
-            Kopírovat názvy firem
-          </button>
-        </td>
-      </tfoot>
-    </table>
+            navigator.clipboard.writeText(firmNames);
+            setMsg('Názvy firem byly zkopírovány.');
+          }}
+        >
+          Kopírovat názvy firem
+        </button>
+      }
+    />
   );
   const renderTable6 = (data) => (
-    <table>
-      <caption><h2>Neaktivní firmy</h2></caption>
-      <thead>
-        <tr>
-          <th>Firma</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item) => (
-          <tr key={item.id}>
-            <td>{item.name}</td>
-          </tr>
-        ))}
-      </tbody>
-      <tfoot>
-        <td>
-          <button
-            type="button"
-            onClick={() => {
-              const firmNames = data
-                .map((item) => item.firm_name)
-                .filter(Boolean)
-                .join('; ');
+    <DataTable
+      responsive={false}
+      caption={<h2>Neaktivní firmy</h2>}
+      data={data}
+      getRowKey={(row, i) => row.id ?? i}
+      columns={[
+        {
+          key: 'name',
+          label: 'Firma',
+          renderCell: (item) => item.name,
+        },
+      ]}
+      footer={
+        <button
+          type="button"
+          onClick={() => {
+            const firmNames = data
+              .map((item) => (item.firm_name || item.name))
+              .filter(Boolean)
+              .join('; ');
 
-              navigator.clipboard.writeText(firmNames);
-              setMsg('Názvy firem byly zkopírovány.');
-            }}
-          >
-            Kopírovat názvy firem
-          </button>
-        </td>
-      </tfoot>
-    </table>
+            navigator.clipboard.writeText(firmNames);
+            setMsg('Názvy firem byly zkopírovány.');
+          }}
+        >
+          Kopírovat názvy firem
+        </button>
+      }
+    />
   );
   const renderComponet = () => (
     <div>

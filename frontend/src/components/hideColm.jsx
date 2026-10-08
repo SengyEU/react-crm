@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import DataTable from './DataTable';
 import Notification from './notification';
 import { useUrl } from './UrlProvider';
 
@@ -56,33 +57,32 @@ const HideColm = () => {
     <form onSubmit={handleSubmit}>
       {isSuccessVisible && (<Notification message="Uloženo" type="edit-firm-success" />)}
       {isErrorVisible && (<Notification message={`Chyba při ukládání! ${msg}`} type="edit-firm-error" />)}
-      <table>
-        <thead>
-          <tr>
-            <th>Sloupec</th>
-            <th>Viditelnost</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(formData).map(([key, value]) => (
-            <tr key={key}>
-              <td>
-                <label htmlFor={key}>{key}</label>
-              </td>
-              <td>
-                {/* eslint-disable-line jsx-a11y/label-has-associated-control */}
-                <input
-                  type="checkbox"
-                  name={key}
-                  id={key}
-                  checked={value === true}
-                  onChange={handleChange}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <DataTable
+        responsive={false}
+        data={Object.entries(formData)}
+        getRowKey={(entry) => entry[0]}
+        columns={[
+          {
+            key: 'name',
+            label: 'Sloupec',
+            renderCell: (entry) => <label htmlFor={entry[0]}>{entry[0]}</label>,
+          },
+          {
+            key: 'visible',
+            label: 'Viditelnost',
+            sortable: false,
+            renderCell: (entry) => (
+              <input
+                type="checkbox"
+                name={entry[0]}
+                id={entry[0]}
+                checked={entry[1] === true}
+                onChange={handleChange}
+              />
+            ),
+          },
+        ]}
+      />
       <button type="submit">Uložit</button>
     </form>
   );

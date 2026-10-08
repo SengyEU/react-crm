@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import FancyCheckbox from './fancyCheckbox';
+import DataTable from './DataTable';
 import Notification from './notification';
 import { useUrl } from './UrlProvider';
 
@@ -298,56 +299,70 @@ const CampaignContactsList = () => {
         </button>
       </div>
 
-      <table className="responsive-table" style={{ marginTop: 70 }}>
-        <thead>
-          <tr>
-            <th>
-              <FancyCheckbox
-                indeterminate={areSomeSelected}
-                onChange={toggleMaster}
-                ariaLabel={masterLabel}
-                id="master"
-                name="master"
-                checked={areAllSelected}
-              />
-            </th>
-            <th>Firma</th>
-            <th>Email</th>
-            <th>Status</th>
-            <th>Status z cronu</th>
-            <th>Aktualizace</th>
-          </tr>
-        </thead>
-        <tbody>
-          {contacts.map((contact) => (
-            <tr key={contact.contact_id}>
-              <td>
-                <FancyCheckbox
-                  id={contact.contact_id}
-                  name={contact.contact_id}
-                  checked={selectedContacts.includes(contact.contact_id)}
-                  onChange={() => handleCheckboxChange(contact.contact_id)}
-                  ariaLabel={`Vybrat kontakt ${contact.contact_id}`}
-                />
-              </td>
-
-              <td>
-                <Link
-                  to={`/firm/${encodeURIComponent(contact.firm_name || contact.name || '')}`}
-                  style={{ cursor: 'pointer', textDecoration: 'underline', color: 'inherit' }}
-                >
-                  {contact.name || `${contact.surname || ''}`}
-                </Link>
-              </td>
-
-              <td>{contact.email}</td>
-              <td>{contact.status || '—'}</td>
-              <td>{contact.status_from_cron || '—'}</td>
-              <td>{contact.datum_aktualizace || '—'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <DataTable
+        style={{ marginTop: 70 }}
+        data={contacts}
+        getRowKey={(row, i) => row.contact_id ?? i}
+        selectedIds={new Set(selectedContacts)}
+        renderSelectHeader={() => (
+          <FancyCheckbox
+            indeterminate={areSomeSelected}
+            onChange={toggleMaster}
+            ariaLabel={masterLabel}
+            id="master"
+            name="master"
+            checked={areAllSelected}
+          />
+        )}
+        renderSelectCell={(row) => (
+          <FancyCheckbox
+            id={row.contact_id}
+            name={row.contact_id}
+            checked={selectedContacts.includes(row.contact_id)}
+            onChange={() => handleCheckboxChange(row.contact_id)}
+            ariaLabel={`Vybrat kontakt ${row.contact_id}`}
+          />
+        )}
+        columns={[
+          {
+            key: 'firma',
+            label: 'Firma',
+            sortable: false,
+            renderCell: (contact) => (
+              <Link
+                to={`/firm/${encodeURIComponent(contact.firm_name || contact.name || '')}`}
+                style={{ cursor: 'pointer', textDecoration: 'underline', color: 'inherit' }}
+              >
+                {contact.name || `${contact.surname || ''}`}
+              </Link>
+            ),
+          },
+          {
+            key: 'email',
+            label: 'Email',
+            sortable: false,
+            renderCell: (contact) => contact.email,
+          },
+          {
+            key: 'status',
+            label: 'Status',
+            sortable: false,
+            renderCell: (contact) => contact.status || '—',
+          },
+          {
+            key: 'status_from_cron',
+            label: 'Status z cronu',
+            sortable: false,
+            renderCell: (contact) => contact.status_from_cron || '—',
+          },
+          {
+            key: 'datum_aktualizace',
+            label: 'Aktualizace',
+            sortable: false,
+            renderCell: (contact) => contact.datum_aktualizace || '—',
+          },
+        ]}
+      />
     </>
   );
 };

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import EditContactForm from './editContactForm';
+import DataTable from './DataTable';
 import Notification from './notification';
 import { useUrl } from './UrlProvider';
 
@@ -194,59 +195,67 @@ const ContactList = ({
           firmName={displayFirmTitle}
         />
       ) : (
-        <table className="responsive-table">
-          <caption>
-            <h3>{`${displayFirmTitle.split('/(kont)')[0]} - kontakty`}</h3>
-          </caption>
-          <thead>
-            <tr>
-              <th>Hlavní</th>
-              <th>Aktivní</th>
-              <th>Foto</th>
-              <th>Jméno</th>
-              <th>E-mail</th>
-              <th>Telefon</th>
-              <th>LinkedIN</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {contacts.map((contact) => (
-              <tr key={contact.id}>
-                <td data-label="Hlavní">
-                  {contact.main === '1' ? '✅' : '☐'}
-                </td>
-                <td data-label="Aktivní">
-                  {contact.active_c === '1' ? '✅' : '☐'}
-                </td>
-                <td data-label="Foto">
-                  {contact.img ? (
-                    <img src={contact.img} alt="" className="kontakt-img" />
-                  ) : null}
-                </td>
-                <td data-label="Jméno">{contact.surname}</td>
-                <td data-label="E-mail">
-                  {contact.email ? (
-                    <a href={contact.mailto ? contact.mailto.replace(/\+/g, ' ') : `mailto:${contact.email}`}>
-                      {contact.email}
-                    </a>
-                  ) : null}
-                </td>
-                <td data-label="Telefon">
-                  {contact.phone ? (
-                    <a href={`tel:${contact.phone}`}>{contact.phone}</a>
-                  ) : null}
-                </td>
-                <td data-label="LinkedIN">
-                  {contact.linkedin ? (
-                    <a href={contact.linkedin} target="_blank" rel="noreferrer">
-                      LinkedIN
-                    </a>
-                  ) : (
-                    '\u00A0'
-                  )}
-                </td>
-                <td>
+        <DataTable
+          caption={<h3>{`${displayFirmTitle.split('/(kont)')[0]} - kontakty`}</h3>}
+          data={contacts}
+          columns={[
+            {
+              key: 'main',
+              label: 'Hlavní',
+              dataLabel: 'Hlavní',
+              renderCell: (contact) => (contact.main === '1' ? '✅' : '☐'),
+            },
+            {
+              key: 'active_c',
+              label: 'Aktivní',
+              dataLabel: 'Aktivní',
+              renderCell: (contact) => (contact.active_c === '1' ? '✅' : '☐'),
+            },
+            {
+              key: 'img',
+              label: 'Foto',
+              dataLabel: 'Foto',
+              renderCell: (contact) => (contact.img ? (
+                <img src={contact.img} alt="" className="kontakt-img" />
+              ) : null),
+            },
+            { key: 'surname', label: 'Jméno', dataLabel: 'Jméno' },
+            {
+              key: 'email',
+              label: 'E-mail',
+              dataLabel: 'E-mail',
+              renderCell: (contact) => (contact.email ? (
+                <a href={contact.mailto ? contact.mailto.replace(/\+/g, ' ') : `mailto:${contact.email}`}>
+                  {contact.email}
+                </a>
+              ) : null),
+            },
+            {
+              key: 'phone',
+              label: 'Telefon',
+              dataLabel: 'Telefon',
+              renderCell: (contact) => (contact.phone ? (
+                <a href={`tel:${contact.phone}`}>{contact.phone}</a>
+              ) : null),
+            },
+            {
+              key: 'linkedin',
+              label: 'LinkedIN',
+              dataLabel: 'LinkedIN',
+              renderCell: (contact) => (contact.linkedin ? (
+                <a href={contact.linkedin} target="_blank" rel="noreferrer">
+                  LinkedIN
+                </a>
+              ) : (
+                ' '
+              )),
+            },
+            {
+              key: 'akce',
+              label: '',
+              sortable: false,
+              renderCell: (contact) => (
+                <>
                   <button type="button" onClick={() => handleEditClick(contact)}>
                     Upravit
                   </button>
@@ -271,10 +280,12 @@ const ContactList = ({
                   >
                     Kontakt do schránky
                   </button>
-                </td>
-              </tr>
-            ))}
-            <tr>
+                </>
+              ),
+            },
+          ]}
+          extraRow={(
+            <>
               <td />
               <td />
               <td />
@@ -296,9 +307,9 @@ const ContactList = ({
                   Přidat kontakt
                 </button>
               </td>
-            </tr>
-          </tbody>
-        </table>
+            </>
+          )}
+        />
       )}
     </div>
   );

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import EditWSForm from './editWSForm';
+import DataTable from './DataTable';
 import { useUrl } from './UrlProvider';
 import convertDateToCzech from '../utils/czechdates';
 
@@ -184,46 +185,61 @@ const WorkshopList = ({
           firmName={displayFirmTitle.split('/(kont)')[0]}
         />
       ) : (
-        <table className="responsive-table">
-          <caption>
-            <h3>{`Akce s firmou ${displayFirmTitle.split('/(kont)')[0]}`}</h3>
-          </caption>
-          <thead>
-            <tr>
-              <th className="hidden">ID</th>
-              <th>Datum</th>
-              <th>Typ</th>
-              <th>Poznámka</th>
-              <th />
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {workshops.map((workshop) => (
-              <tr key={workshop.id}>
-                <td data-label="ID" className="hidden">
-                  {workshop.id}
-                </td>
-                <td data-label="Datum">{convertDateToCzech(workshop.date)}</td>
-                <td data-label="Typ">{workshop.type}</td>
-                <td data-label="Poznámka">{workshop.notes}</td>
-                <td>
-                  <button type="button" onClick={() => handleEditClick(workshop)}>
-                    Upravit
-                  </button>
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    onClick={() => handledelClick(workshop)}
-                    className="del-btn"
-                  >
-                    Smazat
-                  </button>
-                </td>
-              </tr>
-            ))}
-            <tr>
+        <DataTable
+          caption={<h3>{`Akce s firmou ${displayFirmTitle.split('/(kont)')[0]}`}</h3>}
+          data={workshops}
+          columns={[
+            {
+              key: 'id',
+              label: 'ID',
+              dataLabel: 'ID',
+              colClass: false,
+              headerClassName: 'hidden',
+              cellClassName: 'hidden',
+            },
+            {
+              key: 'date',
+              label: 'Datum',
+              dataLabel: 'Datum',
+              renderCell: (workshop) => convertDateToCzech(workshop.date),
+            },
+            {
+              key: 'type',
+              label: 'Typ',
+              dataLabel: 'Typ',
+            },
+            {
+              key: 'notes',
+              label: 'Poznámka',
+              dataLabel: 'Poznámka',
+            },
+            {
+              key: 'edit',
+              label: '',
+              sortable: false,
+              renderCell: (workshop) => (
+                <button type="button" onClick={() => handleEditClick(workshop)}>
+                  Upravit
+                </button>
+              ),
+            },
+            {
+              key: 'delete',
+              label: '',
+              sortable: false,
+              renderCell: (workshop) => (
+                <button
+                  type="button"
+                  onClick={() => handledelClick(workshop)}
+                  className="del-btn"
+                >
+                  Smazat
+                </button>
+              ),
+            },
+          ]}
+          extraRow={(
+            <>
               <td />
               <td />
               <td />
@@ -245,9 +261,9 @@ const WorkshopList = ({
                   Přidat akci
                 </button>
               </td>
-            </tr>
-          </tbody>
-        </table>
+            </>
+          )}
+        />
       )}
     </div>
   );

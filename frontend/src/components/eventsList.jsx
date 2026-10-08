@@ -3,6 +3,7 @@ import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AddEventToGoogleCalendar from './google/AddEventToGoogleCalendar';
+import DataTable from './DataTable';
 import { useUrl } from './UrlProvider';
 import translate from '../utils/translate';
 
@@ -308,50 +309,32 @@ const Events = () => {
         />
       </div>
 
-      <table className="firmlist eventlist responsive-table">
-        <caption>
-          <h3>Události</h3>
-        </caption>
-
-        <thead>
-          <tr>
-            {columns.map((column) => (
-              <th
-                key={column}
-                onClick={() => sortByKey(column)}
-                className={`col-name-${column}`}
-              >
-                {column === 'name' ? (
-                  <>
-                    Událost
-                    {' '}
-                    (
-                    {mappedData.length}
-                    )
-                    {' '}
-                    {addEventBtn()}
-                  </>
-                ) : (
-                  translate(column)
-                )}
-              </th>
-            ))}
-            <th>
-              <a href={csvURL} id="csv_export">CSV export</a>
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {mappedData.map((row) => (
-            <tr key={row.id}>
-              {columns.map((column) => {
-                if (column === 'firma') {
-                  return (
-                    <td
-                      key={column}
-                      data-label={`${trans[column]} :`}
-                      className={trans[column] ?? 'hidden'}
+      <DataTable
+        caption={<h3>Události</h3>}
+        className="firmlist eventlist"
+        data={mappedData}
+        sortConfig={sortConfig}
+        onSort={(key) => sortByKey(key)}
+        getRowKey={(row, i) => row.id ?? i}
+        columns={[
+          ...columns.map((column) => ({
+            key: column,
+            label:
+              column === 'name' ? (
+                <>
+                  Událost ({mappedData.length}) {addEventBtn()}
+                </>
+              ) : (
+                translate(column)
+              ),
+            headerClassName: `col-name-${column}`,
+            colClass: false,
+            dataLabel: `${trans[column]} :`,
+            cellClassName: () => trans[column] ?? 'hidden',
+            renderCell:
+              column === 'firma'
+                ? (row) => (
+                    <span
                       style={{ cursor: 'pointer', color: '#E8474C' }}
                       onClick={() => {
                         if (row.firm_id) {
@@ -361,22 +344,18 @@ const Events = () => {
                       title="Přejít na firmu"
                     >
                       {row[column]}
-                    </td>
-                  );
-                }
-
-                return (
-                  <td
-                    key={column}
-                    data-label={`${trans[column]} :`}
-                    className={trans[column] ?? 'hidden'}
-                  >
-                    {row[column]}
-                  </td>
-                );
-              })}
-
-              <td className="btn-td">
+                    </span>
+                  )
+                : undefined,
+          })),
+          {
+            key: 'actions1',
+            label: '',
+            sortable: false,
+            colClass: false,
+            cellClassName: 'btn-td',
+            renderCell: (row) => (
+              <>
                 <button
                   type="button"
                   onClick={() => {
@@ -385,7 +364,6 @@ const Events = () => {
                 >
                   Upravit
                 </button>
-
                 <button type="button">
                   <a
                     href={`${apiUrl}events/generateICS/${row.id}`}
@@ -396,9 +374,17 @@ const Events = () => {
                     Stáhnout
                   </a>
                 </button>
-              </td>
-
-              <td className="btn-td">
+              </>
+            ),
+          },
+          {
+            key: 'actions2',
+            label: '',
+            sortable: false,
+            colClass: false,
+            cellClassName: 'btn-td',
+            renderCell: (row) => (
+              <>
                 {isValidDateTime(row.time_start) ? (
                   <AddEventToGoogleCalendar
                     title={row.name}
@@ -415,11 +401,21 @@ const Events = () => {
                 >
                   Smazat
                 </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </>
+            ),
+          },
+          {
+            key: 'csvExport',
+            label: (
+              <a href={csvURL} id="csv_export">
+                CSV export
+              </a>
+            ),
+            sortable: false,
+            colClass: false,
+          },
+        ]}
+      />
     </>
   );
 };

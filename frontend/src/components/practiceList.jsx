@@ -3,6 +3,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import EditPracticeForm from './editPracticeForm';
+import DataTable from './DataTable';
 import Notification from './notification';
 import { useUrl } from './UrlProvider';
 import { convertDateTimeToCzech } from '../utils/czechdates';
@@ -118,36 +119,66 @@ const PracticeList = ({
       {selectedPractice ? (
         <EditPracticeForm practice={selectedPractice} onSave={handleSave} onClose={handleClose} />
       ) : (
-        <table className="responsive-table">
-          <caption><h3>{`${firmName.split('/(kont)')[0]} - Praxe`}</h3></caption>
-          <thead>
-            <tr>
-              <th>Datum a čas</th>
-              <th>Obor</th>
-              <th>Ročník</th>
-              <th>Počet žáků</th>
-              <th>Poznámka</th>
-
-            </tr>
-          </thead>
-          <tbody>
-            {practices.map((practice) => (
-              <tr key={practice.id}>
-                <td data-label="Datum a čas">{convertDateTimeToCzech(practice.date_time)}</td>
-                <td data-label="Poznámka">{practice.notes}</td>
-                <td><button type="button" onClick={() => handleEditClick(practice)}>upravit</button></td>
-                <td><button type="button" onClick={() => handledelClick(practice)} className="del-btn">smazat</button></td>
-              </tr>
-            ))}
-            <tr>
+        <DataTable
+          caption={<h3>{`${firmName.split('/(kont)')[0]} - Praxe`}</h3>}
+          data={practices}
+          columns={[
+            {
+              key: 'date_time',
+              label: 'Datum a čas',
+              dataLabel: 'Datum a čas',
+              renderCell: (practice) => convertDateTimeToCzech(practice.date_time),
+            },
+            {
+              key: 'notes',
+              label: 'Obor',
+              dataLabel: 'Poznámka',
+            },
+            {
+              key: 'edit',
+              label: 'Ročník',
+              sortable: false,
+              renderCell: (practice) => (
+                <button type="button" onClick={() => handleEditClick(practice)}>upravit</button>
+              ),
+            },
+            {
+              key: 'delete',
+              label: 'Počet žáků',
+              sortable: false,
+              renderCell: (practice) => (
+                <button
+                  type="button"
+                  onClick={() => handledelClick(practice)}
+                  className="del-btn"
+                >
+                  smazat
+                </button>
+              ),
+            },
+            {
+              key: 'poznamka',
+              label: 'Poznámka',
+              renderCell: () => null,
+            },
+          ]}
+          extraRow={(
+            <>
               <td />
               <td />
               <td />
               <td />
-              <td><button type="button" onClick={() => handleEditClick({ firm_id: firmId })}>Přidat praxi</button></td>
-            </tr>
-          </tbody>
-        </table>
+              <td>
+                <button
+                  type="button"
+                  onClick={() => handleEditClick({ firm_id: firmId })}
+                >
+                  Přidat praxi
+                </button>
+              </td>
+            </>
+          )}
+        />
       )}
     </div>
   );

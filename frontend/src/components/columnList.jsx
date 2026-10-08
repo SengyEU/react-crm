@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import DataTable from './DataTable';
 import EditColumnForm from './editColumnForm';
 import { useUrl } from './UrlProvider';
 
@@ -92,29 +93,42 @@ const ColumnList = () => {
       {selectedColumn ? (
         <EditColumnForm column={selectedColumn} onSave={handleSave} onClose={handleClose} />
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>
-                Název&nbsp;
-                <button type="button" onClick={() => handleEditClick({ id: '-1', name: '' })}>+</button>
-              </th>
-              <th>Typ</th>
-              <th />
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {columns.map((column) => (
-              <tr key={column.id}>
-                <td>{column.name}</td>
-                <td>{types[column.type]}</td>
-                <td><button type="button" onClick={() => handleEditClick(column)}>upravit</button></td>
-                <td><button type="button" onClick={() => handledelClick(column)} className="del-btn">smazat</button></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <DataTable
+          responsive={false}
+          data={columns}
+          columns={[
+            {
+              key: 'name',
+              label: (
+                <>
+                  Název&nbsp;
+                  <button type="button" onClick={() => handleEditClick({ id: '-1', name: '' })}>+</button>
+                </>
+              ),
+            },
+            {
+              key: 'type',
+              label: 'Typ',
+              renderCell: (column) => types[column.type],
+            },
+            {
+              key: 'edit',
+              label: '',
+              sortable: false,
+              renderCell: (column) => (
+                <button type="button" onClick={() => handleEditClick(column)}>upravit</button>
+              ),
+            },
+            {
+              key: 'delete',
+              label: '',
+              sortable: false,
+              renderCell: (column) => (
+                <button type="button" onClick={() => handledelClick(column)} className="del-btn">smazat</button>
+              ),
+            },
+          ]}
+        />
       )}
     </div>
   );

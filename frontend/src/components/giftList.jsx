@@ -3,6 +3,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import EditGiftForm from './editGiftForm';
+import DataTable from './DataTable';
 import { useUrl } from './UrlProvider';
 import convertDateToCzech from '../utils/czechdates';
 
@@ -106,35 +107,56 @@ const GiftList = ({
       {selectedGift ? (
         <EditGiftForm gift={selectedGift} onSave={handleSave} onClose={handleClose} />
       ) : (
-        <table className="responsive-table">
-          <caption><h3>{`${firmName.split('/(kont)')[0]} - dary`}</h3></caption>
-          <thead>
-            <tr>
-              <th>Datum</th>
-              <th>Hodnota</th>
-              <th>Poznámka</th>
-              <th />
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {gifts.map((gift) => (
-              <tr key={gift.id}>
-                <td>{convertDateToCzech(gift.date)}</td>
-                <td>{gift.price}</td>
-                <td>{gift.notes}</td>
-                <td><button type="button" onClick={() => handleEditClick(gift)}>upravit</button></td>
-                <td><button type="button" onClick={() => handledelClick(gift.id)} className="del-btn">smazat</button></td>
-              </tr>
-            ))}
-            <tr>
+        <DataTable
+          caption={<h3>{`${firmName.split('/(kont)')[0]} - dary`}</h3>}
+          data={gifts}
+          columns={[
+            {
+              key: 'date',
+              label: 'Datum',
+              renderCell: (gift) => convertDateToCzech(gift.date),
+            },
+            { key: 'price', label: 'Hodnota' },
+            { key: 'notes', label: 'Poznámka' },
+            {
+              key: 'edit',
+              label: '',
+              sortable: false,
+              renderCell: (gift) => (
+                <button type="button" onClick={() => handleEditClick(gift)}>upravit</button>
+              ),
+            },
+            {
+              key: 'delete',
+              label: '',
+              sortable: false,
+              renderCell: (gift) => (
+                <button
+                  type="button"
+                  onClick={() => handledelClick(gift.id)}
+                  className="del-btn"
+                >
+                  smazat
+                </button>
+              ),
+            },
+          ]}
+          extraRow={(
+            <>
               <td />
               <td />
               <td />
-              <td><button type="button" onClick={() => handleEditClick({ id: null, firm_id: firmId })}>Přidat</button></td>
-            </tr>
-          </tbody>
-        </table>
+              <td>
+                <button
+                  type="button"
+                  onClick={() => handleEditClick({ id: null, firm_id: firmId })}
+                >
+                  Přidat
+                </button>
+              </td>
+            </>
+          )}
+        />
       )}
     </div>
   );

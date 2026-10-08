@@ -4,6 +4,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DataTable from './DataTable';
 import { useUrl } from './UrlProvider';
 import isSmall from '../utils/mobileDetect';
 
@@ -91,49 +92,32 @@ const CampaignList = () => {
   return (
     <div>
       <h1>Zasílání</h1>
-      <table className={`responsive-table ${isWrapped ? 'wrap-cells' : 'nowrap-cells'}`}>
-        <thead>
-          <tr>
-            <th>
-              ID
-              <span
-                onClick={toggleWrap}
-                style={{ cursor: 'pointer', fontSize: '1.2em, padding-left:1em' }}
-                title="Přepnout zalamování textu"
-              >
-                🔁
-              </span>
-            </th>
-            <th>Název</th>
-            <th>Datum Vytvoření</th>
-            <th>Datum odeslání</th>
-            <th>Datum ukončení</th>
-            <th>Počet adresátů (firem)</th>
-            <th>Počet nedoručení</th>
-            <th>Počet potvrzení o doručení</th>
-            <th>Odpovědělo</th>
-            <th>Poznámka</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {campaigns.map((campaign) => (
-            <tr key={campaign.id}>
-              <td>{campaign.id}</td>
-              <td
-                onClick={() => handleClick(campaign.id)}
-              >
-                {getFirstPart(campaign.name)}
-              </td>
-              <td>{campaign.created_date}</td>
-              <td>{campaign.sent_date_time}</td>
-              <td>{campaign.end_date}</td>
-              <td>{campaign.recipient_count}</td>
-              <td>{campaign.undelivered_count}</td>
-              <td>{campaign.confirmed_received_count}</td>
-              <td>{campaign.replied_count}</td>
-              <td>{campaign.note}</td>
-              <td>
+      <DataTable
+        className={isWrapped ? 'wrap-cells' : 'nowrap-cells'}
+        data={campaigns}
+        onToggleWrap={toggleWrap}
+        columns={[
+          { key: 'id', label: 'ID', colClass: false },
+          {
+            key: 'name',
+            label: 'Název',
+            onCellClick: (campaign) => handleClick(campaign.id),
+            renderCell: (campaign) => getFirstPart(campaign.name),
+          },
+          { key: 'created_date', label: 'Datum Vytvoření' },
+          { key: 'sent_date_time', label: 'Datum odeslání' },
+          { key: 'end_date', label: 'Datum ukončení' },
+          { key: 'recipient_count', label: 'Počet adresátů (firem)' },
+          { key: 'undelivered_count', label: 'Počet nedoručení' },
+          { key: 'confirmed_received_count', label: 'Počet potvrzení o doručení' },
+          { key: 'replied_count', label: 'Odpovědělo' },
+          { key: 'note', label: 'Poznámka' },
+          {
+            key: 'actions',
+            label: '',
+            sortable: false,
+            renderCell: (campaign) => (
+              <>
                 {user.user !== 'reader' ? (
                   <div>
                     <div className={isSmall() ? 'small-resolution' : ''}>
@@ -145,11 +129,11 @@ const CampaignList = () => {
                 ) : (
                   ''
                 )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import DataTable from './DataTable';
 import { useUrl } from './UrlProvider';
 
 const Stats = () => {
@@ -67,13 +68,6 @@ const Stats = () => {
     setSortConfig({ key, direction });
   };
 
-  const getSortIcon = (key) => {
-    if (sortConfig.key !== key) {
-      return '';
-    }
-    return sortConfig.direction === 'asc' ? '▲' : '▼';
-  };
-
   if (loading) {
     return <p>Načítání...</p>;
   }
@@ -116,6 +110,12 @@ const Stats = () => {
     return mappedItem;
   });
 
+  const tableColumns = columns.map((column) => ({
+    key: column,
+    label: column === 'name' ? `Firma (${mappedData.length})` : column.replace(/_/g, ' '),
+    colClass: false,
+  }));
+
   return (
     <>
       <div className="filter-bar">
@@ -130,34 +130,14 @@ const Stats = () => {
         />
         <a href={csvURL} id="csv_export">CSV export</a>
       </div>
-      <table className="firmlist statlist">
-        <thead>
-          <tr>
-            {columns.map((column) => (
-              <th
-                key={column}
-                onClick={() => sortByKey(column)}
-                className={getSortIcon(column) ? 'sorted-colm' : ''}
-              >
-                {column === 'name' ? (
-                  `Firma (${mappedData.length})`
-                ) : (
-                  `${column.replace(/_/g, ' ')} ${getSortIcon(column)}`
-                )}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {mappedData.map((row) => (
-            <tr key={row.id}>
-              {columns.map((column) => (
-                <td key={column} className={getSortIcon(column) ? 'sorted-colm' : ''}>{row[column]}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <DataTable
+        responsive={false}
+        className="firmlist statlist"
+        data={mappedData}
+        sortConfig={sortConfig}
+        onSort={sortByKey}
+        columns={tableColumns}
+      />
     </>
   );
 };
