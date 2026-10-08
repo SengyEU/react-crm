@@ -584,7 +584,7 @@ const FirmList = () => {
             onSort={sortByKey}
             onToggleWrap={toggleWrap}
             selectedIds={selectedIds}
-            onSelectRow={(rowIndex, id, shiftKey) => toggleSelectWithShift(rowIndex, Number(id), shiftKey)}
+            onSelectRow={(rowIndex, id, shiftKey) => toggleSelectWithShift(rowIndex, id, shiftKey)}
             getRowId={(row) => row.name ? `row-${row.name.charAt(0).toLowerCase()}` : undefined}
             columns={[
               ...columns.map((col) => {
