@@ -1,4 +1,5 @@
 # React CRM
+### Nasazení: https://react-crm.sengycraft.cz
 ## GitMaster - Marek Dudkovič
 ## Devs - Hoang Hai Trung, Roman Ježdík, Tomáš Holoubek, Temirmalik Bakridinov, Marek Dudkovič
 ### Úkoly:
