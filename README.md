@@ -1,5 +1,9 @@
 # React CRM
 ### Nasazení: https://react-crm.sengycraft.cz
+### Přihlášení:
+- **lm / mjf7JIM1WM** - plný přístup (editace i mazání)
+- **reader / 1234OLe** - jen pro čtení (read-only, umí pouze GET)
+- **admin / 1234** - jen pro čtení (guest), navíc pouze lokálně (localhost)
 ## GitMaster - Marek Dudkovič
 ## Devs - Hoang Hai Trung, Roman Ježdík, Tomáš Holoubek, Temirmalik Bakridinov, Marek Dudkovič
 ### Úkoly:
