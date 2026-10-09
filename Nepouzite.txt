@@ -1,0 +1,35 @@
+src/components/campaignDetail.jsx
+
+src/components/columnGraph.jsx
+
+src/components/combo.jsx
+
+src/components/CopyFirmNamesButton.jsx
+
+src/components/filter - kopie.jsx
+
+src/components/google/gauth.jsx
+
+src/components/google/googleAuthProvider.jsx
+
+src/components/RingChart.jsx
+
+src/components/searchContact.jsx
+
+src/components/statsByYears - kopie.jsx
+
+
+
+@react-oauth/google
+
+@rjsf/core
+
+@rjsf/validator-ajv8
+
+clsx
+
+gapi-script
+
+micromatch
+
+react-responsive
