@@ -622,7 +622,7 @@ const FirmList = () => {
                     )}
                   </th>
                 ))}
-                <th style={{ 'text-align': 'left' }}>
+                <th style={{ textAlign: 'left' }}>
                   {addFirmBnt()}
                   <a href={csvURL} id="csv_export">CSV export</a>
                 </th>

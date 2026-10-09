@@ -105,12 +105,13 @@ export function mockApiPlugin() {
 
           // GET /rest.php/firms/form
           if (req.method === 'GET' && segments[1] === 'form') {
-            return json(200, {
-              subjects: [
-                { id: '1', name: 'ELE' },
-                { id: '2', name: 'IT' },
-              ],
-            });
+            return json(200, [
+              ['name', 'text', 'Název firmy', false, ''],
+              ['obor', 'select', 'Obor', false, ''],
+              ['Významý partner', 'text', 'Významný partner', false, ''],
+              ['Velertr26', 'text', 'Veletrh 26', false, ''],
+              ['note', 'textarea', 'Poznámka', false, '']
+            ]);
           }
 
           // GET single firm

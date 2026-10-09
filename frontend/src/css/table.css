@@ -9,7 +9,7 @@ table {
   text-decoration: none;
   color:white;
 }
-.col-contacts {font-size:10px;display:none}
+.col-contacts {font-size:12px; display:block; color: #555;}
 /*
 caption {
   color: white;

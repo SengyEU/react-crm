@@ -31,7 +31,11 @@ const Auth401Guard = ({ children }) => {
             `${window.location.pathname}${window.location.search}`,
           );
 
-          window.location.href = `${url}?returnUrl=${returnUrl}`;
+          let redirectUrl = `${url}?returnUrl=${returnUrl}`;
+          if (url === '/') {
+            redirectUrl = `/index.php?returnUrl=${returnUrl}`;
+          }
+          window.location.href = redirectUrl;
         }
       } catch (e) {
         console.log(e);

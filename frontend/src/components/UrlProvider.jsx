@@ -8,7 +8,7 @@ const UrlContext = createContext(null);
 const UrlProvider = ({ children }) => {
   const [isDirty, setIsDirty] = useState(false);
   const url = PRODUCTION
-    ? 'https://crm.skch.cz/ajax0/v3/'
+    ? 'https://crm.skch.cz/v3/'
     : '/';
 
   const apiUrl = useMemo(() => `${url}rest.php/`, [url]);
