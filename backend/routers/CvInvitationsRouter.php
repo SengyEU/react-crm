@@ -11,19 +11,8 @@ class CvInvitationsRouter extends Router
     {
         parent::__construct($conn);
         $this->cvInvitations = new cvInvitations($conn);
-    }
 
-    protected function get($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'cvinvitations') {
-            $this->output($this->cvInvitations->getcvIvnvitatios($uri[2]));
-        }
-    }
-
-    protected function post($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'cvinvitations') {
-            $this->output($this->cvInvitations->save($input));
-        }
+        $this->get('cvinvitations/{id?}', fn($p) => $this->cvInvitations->getcvIvnvitatios($p['id'] ?? null));
+        $this->post('cvinvitations', fn($p, $in) => $this->cvInvitations->save($in));
     }
 }

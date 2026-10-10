@@ -11,53 +11,23 @@ class CampaignsRouter extends Router
     {
         parent::__construct($conn);
         $this->campaigns = new campaigns($conn);
-    }
 
-    protected function get($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'copyCampaign' && isset($uri[2])) {
-            $this->output($this->campaigns->copyCampaign($uri[2]));
-        } else if (isset($uri[1]) && $uri[1] === 'campaignAttachment' && isset($uri[2])) {
-            $this->downloadAttachment($uri[2]);
-            exit;
-        } else if (isset($uri[1]) && $uri[1] === 'campaignExport') {
-            $this->output($this->campaigns->getCampaignExport(isset($uri[2]) ? $uri[2] : 0));
-        } else if (isset($uri[1]) && $uri[1] === 'campaigns' && isset($uri[2]) && $uri[2] === 'getCampaignSending') {
-            $this->output($this->campaigns->getCampaignSending(isset($uri[3]) ? $uri[3] : 0));
-        } else if (isset($uri[1]) && $uri[1] === 'campaigns') {
-            $this->output($this->campaigns->getCampaigns());
-        } else if (isset($uri[1]) && $uri[1] === 'getCampaignContacts' && isset($uri[2]) && $uri[2]) {
-            $this->output($this->campaigns->getCampaignContacts($uri[2]));
-        } else if (isset($uri[1]) && $uri[1] === 'campaign' && isset($uri[2]) && $uri[2]) {
-            $this->output($this->campaigns->getCampaign($uri[2]));
-        }
-    }
+        $this->get('copyCampaign/{id}', fn($p) => $this->campaigns->copyCampaign($p['id']));
+        $this->raw('GET', 'campaignAttachment/{id}', fn($p) => $this->downloadAttachment($p['id']));
+        $this->get('campaignExport/{id?}', fn($p) => $this->campaigns->getCampaignExport($p['id'] ?? 0));
+        $this->get('campaigns/getCampaignSending/{id?}', fn($p) => $this->campaigns->getCampaignSending($p['id'] ?? 0));
+        $this->get('campaigns/{id?}', fn() => $this->campaigns->getCampaigns());
+        $this->get('getCampaignContacts/{id}', fn($p) => $this->campaigns->getCampaignContacts($p['id']));
+        $this->get('campaign/{id}', fn($p) => $this->campaigns->getCampaign($p['id']));
 
-    protected function post($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'campaigns') {
-            $this->output($this->campaigns->insert($input));
-        } else if (isset($uri[1]) && $uri[1] === 'getCampaignSeindingExport') {
-            $this->output($this->campaigns->getCampaignSeindingExport($uri[2], $input));
-        } else if (isset($uri[1]) && $uri[1] === 'campaignContacts') {
-            $this->output($this->campaigns->campaignContactsUpdate($uri[2], $input));
-        }
-    }
+        $this->post('campaigns', fn($p, $in) => $this->campaigns->insert($in));
+        $this->post('getCampaignSeindingExport/{id?}', fn($p, $in) => $this->campaigns->getCampaignSeindingExport($p['id'] ?? null, $in));
+        $this->post('campaignContacts/{id}', fn($p, $in) => $this->campaigns->campaignContactsUpdate($p['id'], $in));
 
-    protected function put($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'campaigns') {
-            $this->output($this->campaigns->update($input));
-        }
-    }
+        $this->put('campaigns/{id?}', fn($p, $in) => $this->campaigns->update($in));
 
-    protected function delete($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'campaignContacts') {
-            $this->output($this->campaigns->deleteCampaignContacts($uri[2], $input));
-        } else if (isset($uri[1]) && $uri[1] === 'campaign') {
-            $this->output($this->campaigns->delete($uri[2]));
-        }
+        $this->delete('campaignContacts/{id}', fn($p, $in) => $this->campaigns->deleteCampaignContacts($p['id'], $in));
+        $this->delete('campaign/{id}', fn($p) => $this->campaigns->delete($p['id']));
     }
 
     private function downloadAttachment($id)

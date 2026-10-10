@@ -11,33 +11,10 @@ class MeetsRouter extends Router
     {
         parent::__construct($conn);
         $this->meets = new meets($conn);
-    }
 
-    protected function get($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'meets') {
-            $this->output($this->meets->getMeets($uri[2]));
-        }
-    }
-
-    protected function post($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'meets') {
-            $this->output($this->meets->insert($input));
-        }
-    }
-
-    protected function put($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'meets') {
-            $this->output($this->meets->update($input));
-        }
-    }
-
-    protected function delete($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'meets') {
-            $this->output($this->meets->delete($uri[2]));
-        }
+        $this->get('meets/{id?}', fn($p) => $this->meets->getMeets($p['id'] ?? null));
+        $this->post('meets', fn($p, $in) => $this->meets->insert($in));
+        $this->put('meets', fn($p, $in) => $this->meets->update($in));
+        $this->delete('meets/{id?}', fn($p) => $this->meets->delete($p['id'] ?? null));
     }
 }

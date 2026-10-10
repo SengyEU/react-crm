@@ -4,7 +4,13 @@ require_once __DIR__ . '/Router.php';
 
 class UserRouter extends Router
 {
-    protected function get($uri, $input)
+    public function __construct($conn)
+    {
+        parent::__construct($conn);
+        $this->raw('GET', 'user', fn() => $this->currentUser());
+    }
+
+    private function currentUser()
     {
         if (isset($_SESSION["user"])) {
             if ($_SESSION["user"] != null)

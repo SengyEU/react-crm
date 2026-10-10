@@ -12,39 +12,20 @@ class ContactsRouter extends Router
     {
         parent::__construct($conn);
         $this->contacts = new contacts($conn);
+
+        $this->get('contacts/search/{q?}', fn($p) => $this->contacts->search($p['q'] ?? null));
+        $this->raw('GET', 'contacts/exportVcf', fn($p, $in) => $this->exportVcf($in));
+        $this->get('contacts/{firmId?}', fn($p) => $this->contacts->getFirmContacts($p['firmId'] ?? null));
+
+        $this->post('contacts', fn($p, $in) => $this->contacts->insertContacts($in));
+        $this->put('contacts', fn($p, $in) => $this->contacts->updateContacts($in));
+        $this->delete('contacts/{id}', fn($p) => $this->contacts->deleteContact($p['id']));
     }
 
-    protected function get($uri, $input)
+    private function exportVcf($input)
     {
-        if (isset($uri[1]) && $uri[1] === 'contacts' && isset($uri[2]) && $uri[2] === 'search') {
-            $this->output($this->contacts->search($uri[3]));
-        } else if (isset($uri[1]) && $uri[1] === 'contacts' && isset($uri[2]) && $uri[2] === 'exportVcf') {
-            $exporter = new ContactVcfExporter($this->conn);
-            $exporter->export($input);
-            exit;
-        } else if (isset($uri[1]) && $uri[1] === 'contacts') {
-            $this->output($this->contacts->getFirmContacts($uri[2]));
-        }
-    }
-
-    protected function post($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'contacts') {
-            $this->output($this->contacts->insertContacts($input));
-        }
-    }
-
-    protected function put($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'contacts') {
-            $this->output($this->contacts->updateContacts($input));
-        }
-    }
-
-    protected function delete($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'contacts') {
-            $this->output($this->contacts->deleteContact($uri[2]));
-        }
+        $exporter = new ContactVcfExporter($this->conn);
+        $exporter->export($input);
+        exit;
     }
 }

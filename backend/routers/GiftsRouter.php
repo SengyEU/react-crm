@@ -11,33 +11,10 @@ class GiftsRouter extends Router
     {
         parent::__construct($conn);
         $this->gifts = new gifts($conn);
-    }
 
-    protected function get($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'gifts') {
-            $this->output($this->gifts->getgifts($uri[2]));
-        }
-    }
-
-    protected function post($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'gifts') {
-            $this->output($this->gifts->insert($input));
-        }
-    }
-
-    protected function put($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'gifts') {
-            $this->output($this->gifts->update($input));
-        }
-    }
-
-    protected function delete($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'gifts') {
-            $this->output($this->gifts->delete($uri[2]));
-        }
+        $this->get('gifts/{id?}', fn($p) => $this->gifts->getgifts($p['id'] ?? null));
+        $this->post('gifts', fn($p, $in) => $this->gifts->insert($in));
+        $this->put('gifts', fn($p, $in) => $this->gifts->update($in));
+        $this->delete('gifts/{id?}', fn($p) => $this->gifts->delete($p['id'] ?? null));
     }
 }

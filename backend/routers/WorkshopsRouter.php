@@ -11,33 +11,10 @@ class WorkshopsRouter extends Router
     {
         parent::__construct($conn);
         $this->workshops = new workshops($conn);
-    }
 
-    protected function get($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'workshops') {
-            $this->output($this->workshops->getworkshops($uri[2]));
-        }
-    }
-
-    protected function post($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'workshops') {
-            $this->output($this->workshops->insert($input));
-        }
-    }
-
-    protected function put($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'workshops') {
-            $this->output($this->workshops->update($input));
-        }
-    }
-
-    protected function delete($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'workshops') {
-            $this->output($this->workshops->delete($uri[2]));
-        }
+        $this->get('workshops/{id?}', fn($p) => $this->workshops->getworkshops($p['id'] ?? null));
+        $this->post('workshops', fn($p, $in) => $this->workshops->insert($in));
+        $this->put('workshops', fn($p, $in) => $this->workshops->update($in));
+        $this->delete('workshops/{id?}', fn($p) => $this->workshops->delete($p['id'] ?? null));
     }
 }

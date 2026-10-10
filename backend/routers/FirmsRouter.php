@@ -11,62 +11,27 @@ class FirmsRouter extends Router
     {
         parent::__construct($conn);
         $this->firms = new firms($conn);
-    }
 
-    protected function get($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'checkfirmExist') {
-            $this->output($this->firms->checkIfFirmExist($uri[2]));
-        } else if (isset($uri[2]) && $uri[2] === 'list' && isset($uri[3]) && $uri[3] === 'filter') {
-            $this->output($this->firms->getFirmsFilter($_GET));
-        } else if (isset($uri[2]) && $uri[2] === 'list') {
-            $this->output($this->firms->getFirms());
-        } else if (isset($uri[2]) && $uri[2] === 'getFirmsNotCont') {
-            $this->output($this->firms->getFirmsNotCont());
-        } else if (isset($uri[2]) && $uri[2] === 'form') { // parametry formuláře
-            if (isset($uri[3]))
-                $this->output($this->firms->getFirmAndForm($uri[3]));
-            else
-                $this->output($this->firms->getFirmForm());
-        } else if (isset($uri[1]) && $uri[1] === 'firm' && isset($uri[2]) && $uri[2] === 'contactsList') {
-            $this->output($this->firms->contactsList());
-        } else if (isset($uri[1]) && $uri[1] === 'firm') {
-            $this->output($this->firms->getFirm($uri[2]));
-        } else if (isset($uri[1]) && $uri[1] === 'columnsFilter') {
-            $this->output($this->firms->getColmVisibilityFilter());
-        } else if (isset($uri[1]) && $uri[1] === 'columns') {
-            $this->output($this->firms->getColmVisibility());
-        } else if (isset($uri[1]) && $uri[1] === 'columnsList') {
-            $this->output($this->firms->getColms());
-        }
-    }
+        $this->get('checkfirmExist/{id?}', fn($p) => $this->firms->checkIfFirmExist($p['id'] ?? null));
+        $this->get('firms/list/filter', fn() => $this->firms->getFirmsFilter($_GET));
+        $this->get('firms/list', fn() => $this->firms->getFirms());
+        $this->get('firms/getFirmsNotCont', fn() => $this->firms->getFirmsNotCont());
+        $this->get('firms/form/{id}', fn($p) => $this->firms->getFirmAndForm($p['id']));
+        $this->get('firms/form', fn() => $this->firms->getFirmForm());
+        $this->get('firm/contactsList', fn() => $this->firms->contactsList());
+        $this->get('firm/{id?}', fn($p) => $this->firms->getFirm($p['id'] ?? null));
+        $this->get('columnsFilter', fn() => $this->firms->getColmVisibilityFilter());
+        $this->get('columns', fn() => $this->firms->getColmVisibility());
+        $this->get('columnsList', fn() => $this->firms->getColms());
 
-    protected function post($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'firms') {
-            $this->output($this->firms->insert($input));
-        } else if (isset($uri[1]) && $uri[1] === 'columns') {
-            $this->output($this->firms->saveColmVisibility($input));
-        } else if (isset($uri[1]) && $uri[1] === 'column') {
-            $this->output($this->firms->addColm($input["name"], $input["type"]));
-        }
-    }
+        $this->post('firms', fn($p, $in) => $this->firms->insert($in));
+        $this->post('columns', fn($p, $in) => $this->firms->saveColmVisibility($in));
+        $this->post('column', fn($p, $in) => $this->firms->addColm($in["name"], $in["type"]));
 
-    protected function put($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'firms') {
-            $this->output($this->firms->updateFirm($input));
-        } else if (isset($uri[1]) && $uri[1] === 'column') {
-            $this->output($this->firms->updateColmn($input));
-        }
-    }
+        $this->put('firms', fn($p, $in) => $this->firms->updateFirm($in));
+        $this->put('column', fn($p, $in) => $this->firms->updateColmn($in));
 
-    protected function delete($uri, $input)
-    {
-        if (isset($uri[1]) && $uri[1] === 'firms') {
-            $this->output($this->firms->delete($uri[2]));
-        } else if (isset($uri[1]) && $uri[1] === 'column') {
-            $this->output($this->firms->deleteColmn($uri[2]));
-        }
+        $this->delete('firms/{id?}', fn($p) => $this->firms->delete($p['id'] ?? null));
+        $this->delete('column/{id?}', fn($p) => $this->firms->deleteColmn($p['id'] ?? null));
     }
 }
